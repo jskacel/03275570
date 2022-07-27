@@ -1,0 +1,10 @@
+---
+- name: Stop Tomcat
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Stop Tomcat
+      ansible.builtin.shell: |
+        cd /opt/apache-tomcat-8.5.81/bin/
+        sh shutdown.sh

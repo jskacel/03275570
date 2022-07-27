@@ -1,0 +1,39 @@
+---
+- name: Start Tomcat
+  hosts: all
+  become: true
+
+  tasks:
+    # - name: Start Tomcat
+    #   shell: |
+    #     . ~/.profile
+    #     cd /opt/testapp/bin/
+    #     nohup sh startup.sh &
+    #     sleep 60
+    - name: Make sure java is installed
+      ansible.builtin.dnf:
+        name: java-11-openjdk
+        state: latest
+
+    - name: Download Tomcat
+      ansible.builtin.get_url:
+        url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.81/bin/apache-tomcat-8.5.81.tar.gz
+        dest: /tmp/
+        mode: '0644'
+
+    - name: Extract Tomcat to /opt/testapp
+      ansible.builtin.unarchive:
+        src: /tmp/apache-tomcat-8.5.81.tar.gz
+        dest: /opt/
+        remote_src: true
+
+    - name: Setting exec permissions on catalina.sh
+      ansible.builtin.file:
+        path: /opt/apache-tomcat-8.5.81/bin/catalina.sh
+        mode: '0755'
+
+    - name: Start Tomcat
+      ansible.builtin.shell: |
+        cd /opt/apache-tomcat-8.5.81/bin/
+        nohup sh startup.sh &
+        sleep 10
